@@ -1,0 +1,23 @@
+#!/bin/sh
+
+## Add by Guido.Corazza 2017-01-23
+
+# 1. Create file containing extensions to be ignored
+echo "Creating .svnignore file"
+cat > .svnignore <<- "EOF"
+*.class
+*.xml
+*.properties
+EOF
+#sleep 1s
+
+
+# 2. Ignore files in the given addresses
+svn propset svn:ignore -R -F .svnignore spider-order-robot-platform/src/main/webapp/WEB-INF/classes/
+#svn propset svn:ignore -R -F .svnignore spider-order-robot-agent/src/main/webapp/WEB-INF/classes/
+#svn propset svn:ignore -R -F .svnignore spider-order-robot-common/src/main/webapp/WEB-INF/classes/
+
+
+
+
+http://superchlorine.com/2013/08/getting-svn-to-ignore-files-and-directories/

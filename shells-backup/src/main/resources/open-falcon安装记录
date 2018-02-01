@@ -1,0 +1,16 @@
+小米监控工具open-falcon安装步骤记录::
+
+1.创建目录；
+
+2.使用脚本创建mysql数据库；
+
+3.下载编译好的二进制安装包；
+
+4.两次循环解压安装；
+
+5.依次修改cfg.sample.json为cfg.json并启动服务::
+	启动transfer；
+	启动agent；
+	启动graph,需要修改storage路径和mysql链接url的用户名和密码；
+	启动query；
+	启动dashboard,需要预先安装virtualenv,也需要预先安装sudo apt-get install libmysqlclient-dev,也需要修改rrd下的mysql连接参数及文件路径；

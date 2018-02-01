@@ -1,0 +1,48 @@
+#!/bin/sh
+
+here=`pwd`
+temp_log_data_file=$here"/temp_data_time_section.log"
+temp_result_file=$here"/temp_result_time_section.csv"
+realtime_monitor_time_section_server="http://118.178.57.197:8080/spider-55haitao-monitor-chart/realtimeTimesPerMinites.action"
+
+if [ -f "$temp_log_data_file" ]; then
+	/bin/rm $temp_log_data_file
+fi
+
+if [ -f "$temp_result_file" ]; then
+	/bin/rm $temp_result_file
+fi
+
+touch $temp_log_data_file
+touch $temp_result_file
+
+cat /data/tomcat9/realtime/r1/apache-tomcat-9.0.0.M6/logs/realtime_time_consuming.log >> $temp_log_data_file
+cat /data/tomcat9/realtime/r2/apache-tomcat-9.0.0.M6/logs/realtime_time_consuming.log >> $temp_log_data_file
+cat /data/tomcat9/realtime/r3/apache-tomcat-9.0.0.M6/logs/realtime_time_consuming.log >> $temp_log_data_file
+cat /data/tomcat9/realtime/r4/apache-tomcat-9.0.0.M6/logs/realtime_time_consuming.log >> $temp_log_data_file
+scp -q gphonebbs@10.142.0.5:/data/tomcat9/realtime/r/apache-tomcat-9.0.0.M6/logs/realtime_time_consuming.log $here"/temp.log" && cat $here"/"temp.log >> $temp_log_data_file
+scp -q gphonebbs@10.142.0.5:/data/tomcat9/realtime/r2/apache-tomcat-9.0.0.M6/logs/realtime_time_consuming.log $here"/temp.log" && cat $here"/"temp.log >> $temp_log_data_file
+scp -q gphonebbs@10.142.0.5:/data/tomcat9/realtime/r3/apache-tomcat-9.0.0.M6/logs/realtime_time_consuming.log $here"/temp.log" && cat $here"/"temp.log >> $temp_log_data_file
+scp -q gphonebbs@10.142.0.5:/data/tomcat9/realtime/r4/apache-tomcat-9.0.0.M6/logs/realtime_time_consuming.log $here"/temp.log" && cat $here"/"temp.log >> $temp_log_data_file
+
+currentMinute=`date -d "now -1 minute" +"%Y-%m-%d %H:%M"`
+`cat $temp_log_data_file | grep "$currentMinute" | grep "realtime_time_consuming" | grep -v "crawler" | grep -v "redis" | grep -v "mongo" | grep " from se url" | awk -F' INFO  |realtime_time_consuming : | from | url :' '{print $3" "$5" "$1" "$4}' > $temp_result_file`
+
+result_json_content="{"
+
+time_point_list="0 1 2 3 4 5 6 7 8 9"
+for time_point in $time_point_list
+do
+	currentTimePoint=$(( $time_point + 1 ))
+	currentTimePointCount=`cat $temp_result_file | awk '{FS=" "} {if($1 == "'"$time_point"'") print $0}' | wc -l`
+	if [ "$result_json_content" = "{" ]; then
+		result_json_content=$result_json_content"\"${currentTimePoint}\":${currentTimePointCount}"
+	else
+		result_json_content=$result_json_content", \"${currentTimePoint}\":${currentTimePointCount}"
+	fi
+done
+
+badTimePointCount=`cat $temp_result_file | awk '{FS=" "} {if($1 > 10) print $0}' | wc -l`
+result_json_content=$result_json_content", \"999\":${badTimePointCount}}"
+
+curl -X POST --connect-timeout 10 -m 20 --data "content=$result_json_content" "$realtime_monitor_time_section_server"

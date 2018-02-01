@@ -1,0 +1,1 @@
+sendemail -s smtp.126.com -f liusz_ok@126.com -t liushizhen@55haitao.com -u "hello title" -m "A hello from Christans to buddhists via 126" -a aaa.txt -xu liusz_ok -xp "password" -o tls=auto

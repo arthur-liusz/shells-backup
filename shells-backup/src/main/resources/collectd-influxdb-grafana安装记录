@@ -1,0 +1,24 @@
+安装collectd+influxdb+grafana过程记录::
+
+1.1.influxdb:
+	安装在/home/arthur/installedprogrames/influxdb013static/influxdb-0.13.0-1
+	配置在/home/arthur/installedprogrames/influxdb013static/influxdb-0.13.0-1/influxdb.conf
+	启动::sudo nohup ./influxd -pidfile influxd.pid -config influxdb.conf &
+
+	1.2.influxdb(-client)通过命令行安装的
+
+*****使用命令行向influxdb中添加数据*****
+curl -i -XPOST 'http://localhost:8086/write?db=testDB1' --data-binary 'weather,altitude=1000,area=北 temperature=11,humidity=8'
+
+
+3.grafana:
+	安装在/home/arthur/installedprogrames/grafana311/grafana-3.1.1-1470047149
+	配置在/home/arthur/installedprogrames/grafana311/grafana-3.1.1-1470047149/conf
+	用户名/密码:liushizhen@55haitao.com/147258369Lsz
+		    admin/admin
+	数据库名称:grafanadatabase
+	数据库用户:grafana
+	数据库密码:grafana
+influxdb聚合查询语句::
+SELECT sum("success.www.feelunique.com") as success FROM "crawler" WHERE time >= now() - 1d AND time < now() GROUP BY time(1m);
+SELECT sum("error.www.feelunique.com") as error FROM "crawler" WHERE time >= now() - 1d AND time < now() GROUP BY time(1m);

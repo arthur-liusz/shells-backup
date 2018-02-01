@@ -1,0 +1,16 @@
+**********shadowsocks服务器（ssserver）搭建步骤备份**********
+
+1.更新软件源：
+sudo apt-get update
+
+2.安装PIP环境：
+sudo apt-get install python-pip
+
+3.安装shadowsocks
+sudo pip install shadowsocks
+
+4.支持加密方式安装：
+sudo apt-get install python-m2crypto
+
+5.启动服务（8388端口被console控制台限制了，换成8888就可以了）：
+sudo ssserver -p 8888 -k liushizhen -m aes-256-cfb -d start

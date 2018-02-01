@@ -1,0 +1,41 @@
+#!/bin/sh
+
+## prepare to index history-increment-items into ES, by arthur.liu on 2017-08-18
+
+## ======================================
+
+### 定义并跳转到期望的命令执行位置 ###
+here="/data/apps/spider-data-es"
+cd $here
+
+### 确定要处理的数据的时间 ###
+## day=`date -d "yesterday" +%Y-%m-%d`
+day="2017-08-09"
+
+hisIncShellLog="/data/apps/spider-data-es/history_increment_items_shell_log.log"
+echo "" >> $hisIncShellLog
+echo "`date`" >> $hisIncShellLog
+echo "history increment items start, $day" >> $hisIncShellLog
+
+### 复制ac8上的数据文件到本地 ###
+itemsDirOnAC8="liushizhen@10.26.197.128:/data/cleaning_after_datas/"$day
+itemsDirLocal="/data/apps/spider-data-es/items/"$day
+
+if [ -d $itemsDirLocal ]
+then
+        /bin/rm -rf $itemsDirLocal
+fi
+
+scp -rq $itemsDirOnAC8 $itemsDirLocal
+
+### 修改java程序执行时用到的配置文件 ###
+searchStr="history.increment.items.data.file=.*"
+replaceStr="history.increment.items.data.file=\/data\/apps\/spider-data-es\/items\/"$day"\/55haitao_cleaning_items.json"
+configFile="/data/apps/spider-data-es/config/config.properties"
+sed -i "s/${searchStr}/${replaceStr}/g" $configFile
+
+### 调用java程序，执行history increment items数据的入库 ###
+sh /data/apps/spider-data-es/start_index_history_increment_items.sh
+
+echo "history increment items end, $day" >> $hisIncShellLog
+echo "`date`" >> $hisIncShellLog

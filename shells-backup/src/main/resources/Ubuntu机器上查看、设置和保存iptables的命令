@@ -1,0 +1,17 @@
+sudo iptables -nL
+
+sudo iptables -I INPUT -s 10.142.0.5 -p tcp -m tcp --dport 6379 -j ACCEPT
+
+
+
+
+ubuntu 保存方式：
+iptables-save >/etc/iptables/rules.v4
+然后查看：
+cat /etc/iptables/rules.v4
+
+
+
+
+centos修改和保存方式：
+sudo iptables -I INPUT -s 203.110.164.178 -j ACCEPT  && sudo  /etc/init.d/iptables save

@@ -1,0 +1,1 @@
+curl -X POST --connect-timeout 10 -m 20 -w %{time_total}####"\n" --data "url=https://www.amazon.com/dp/B0073OAJ48/&request_from=immediate" "http://104.197.229.122:8080/spider-55haitao-realtime/realtime-crawler/pricing.action"
